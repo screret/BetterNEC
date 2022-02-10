@@ -46,7 +46,7 @@ public class UpdateAvailableScreen extends GuiScreen {
             Minecraft.getMinecraft().displayGuiScreen(null);
         } else if (button.id == 0) {
             // View changelog
-            UDesktop.browse(URI.create("https://github.com/NotEnoughCoins/NotEnoughCoins/releases"));
+            UDesktop.browse(URI.create("https://github.com/screret/BetterNEC/releases"));
         }
     }
 }
