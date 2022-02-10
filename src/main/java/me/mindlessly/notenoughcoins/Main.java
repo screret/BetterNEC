@@ -44,6 +44,7 @@ public class Main {
     public static Map<String, AverageItem> averageItemMap = new HashMap<>();
     public static Map<String, Date> processedItem = new HashMap<>(); // Date is the expiry time, indicates when the auction ends and should be purged to save memory for the long run
     public static Map<String, Integer> lbinItem = new HashMap<>();
+    public static Map<String, Integer> abgBinItem = new HashMap<>();
     public static Map<String, Integer> bazaarItem = new HashMap<>(); // Long is the item's instant sell price
     public static Map<String, Integer> npcItem = new HashMap<>();
     public static List<String> chatFilters = new LinkedList<>();

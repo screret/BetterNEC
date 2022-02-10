@@ -1,14 +1,15 @@
 [
   {
-    "modid": "nec",
-    "name": "NotEnoughCoins",
+    "modid": "betternec",
+    "name": "BetterNEC",
     "description": "Become rich in Hypixel Skyblock.",
     "version": "${version}",
     "mcversion": "1.8.9",
-    "url": "https://github.com/mindlesslydev/NotEnoughCoins",
-    "updateUrl": "https://github.com/mindlesslydev/NotEnoughCoins",
+    "url": "https://github.com/screret/BetterNEC",
+    "updateUrl": "https://github.com/screret/BetterNEC",
     "authorList": [
-      "Mindlessly"
+      "Mindlessly",
+      "Screret"
     ],
     "logoFile": "",
     "screenshots": [],

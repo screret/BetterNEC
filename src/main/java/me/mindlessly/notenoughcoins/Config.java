@@ -59,6 +59,16 @@ public class Config extends Vigilant {
     )
     public static int minDemand = 10;
     @Property(
+        type = PropertyType.NUMBER,
+        category = "Flipping",
+        subcategory = "Basic",
+        name = "Average Demand",
+        description = "The average sales per day that is required for the mod to send you a higher resell price",
+        max = Integer.MAX_VALUE,
+        increment = 5
+    )
+    public static int avgDemand = 20;
+    @Property(
         type = PropertyType.PERCENT_SLIDER,
         category = "Flipping",
         subcategory = "Basic",
@@ -159,10 +169,10 @@ public class Config extends Vigilant {
         description = "Help with the development!"
     )
     public static void github() {
-        UDesktop.browse(URI.create("https://github.com/mindlesslydev/NotEnoughCoins"));
+        UDesktop.browse(URI.create("https://github.com/screret/BetterNEC"));
     }
 
-    @Property(
+    /*@Property(
         type = PropertyType.BUTTON,
         category = "Links",
         name = "Discord",
@@ -170,7 +180,7 @@ public class Config extends Vigilant {
     )
     public static void discord() {
         UDesktop.browse(URI.create("https://discord.gg/b3JBsh8fEd"));
-    }
+    }*/
 }
 
 class CustomSorting extends SortingBehavior { // We compare by the order of the properties in the code

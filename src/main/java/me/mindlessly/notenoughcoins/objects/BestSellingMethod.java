@@ -4,6 +4,7 @@ public enum BestSellingMethod {
     NPC("NPC"),
     BAZAAR("Bazaar"),
     LBIN("Lowest-BIN"),
+    ABIN("Average-BIN"),
     NONE("None");
     private final String string;
 

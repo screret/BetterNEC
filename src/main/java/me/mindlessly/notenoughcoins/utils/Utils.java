@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import gg.essential.universal.UChat;
 import gg.essential.universal.wrappers.message.UTextComponent;
+import me.mindlessly.notenoughcoins.Config;
 import me.mindlessly.notenoughcoins.Main;
 import me.mindlessly.notenoughcoins.Reference;
 import me.mindlessly.notenoughcoins.objects.BestSellingMethod;
@@ -192,6 +193,10 @@ public class Utils {
         if (id.equals("POTION")) return new AbstractMap.SimpleEntry<>(BestSellingMethod.NONE, 0L);
         BestSellingMethod method = BestSellingMethod.NONE;
         long bestPrice = 0;
+        if (Main.averageItemMap.containsKey(id) && Main.averageItemMap.get(id).demand > Config.avgDemand && Main.lbinItem.get(id) - getTax(Main.lbinItem.get(id)) > bestPrice) {
+            bestPrice = Main.averageItemMap.get(id).ahAvgPrice - getTax(Main.averageItemMap.get(id).ahAvgPrice);
+            method = BestSellingMethod.ABIN;
+        }
         if (Main.lbinItem.containsKey(id) && Main.lbinItem.get(id) - getTax(Main.lbinItem.get(id)) > bestPrice) {
             bestPrice = Main.lbinItem.get(id) - getTax(Main.lbinItem.get(id));
             method = BestSellingMethod.LBIN;
