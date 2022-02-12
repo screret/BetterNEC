@@ -1,10 +1,7 @@
 package me.screret.betternec.utils;
 
 import com.google.common.collect.Sets;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import gg.essential.universal.UChat;
 import gg.essential.universal.wrappers.message.UTextComponent;
 import me.screret.betternec.Config;
@@ -20,15 +17,13 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
 
+import javax.net.ssl.HttpsURLConnection;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.net.URLConnection;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.AbstractMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 
 public class Utils {
@@ -42,10 +37,19 @@ public class Utils {
 
     public static JsonElement getJson(String jsonUrl) throws IOException {
         URL url = new URL(jsonUrl);
-        URLConnection conn = url.openConnection();
+        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
         conn.setRequestProperty("Connection", "close");
         conn.setRequestProperty("User-Agent", "NotEnoughCoins/1.0");
-        return new JsonParser().parse(new InputStreamReader(conn.getInputStream()));
+        return JsonParser.parseReader(new InputStreamReader(conn.getInputStream()));
+    }
+
+    public static JsonElement getJsonFromHypixelAPI(String jsonUrl) throws IOException {
+        URL url = new URL(jsonUrl);
+        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+        conn.setConnectTimeout(0);
+        conn.setDoOutput(true);
+        conn.setRequestMethod("GET");
+        return JsonParser.parseReader(new InputStreamReader(conn.getInputStream()));
     }
 
     public static String formatValue(final long amount) {
@@ -187,7 +191,7 @@ public class Utils {
         if (id.equals("POTION")) return new AbstractMap.SimpleEntry<>(BestSellingMethod.NONE, 0L);
         BestSellingMethod method = BestSellingMethod.NONE;
         long bestPrice = 0;
-        if (Main.averageItemMap.containsKey(id) && Main.averageItemMap.get(id).demand > Config.avgDemand && Main.lbinItem.get(id) - getTax(Main.lbinItem.get(id)) > bestPrice) {
+        if (Main.averageItemMap.containsKey(id) && Main.averageItemMap.get(id).demand > Config.avgDemand && Main.averageItemMap.get(id).ahAvgPrice - getTax(Main.averageItemMap.get(id).ahAvgPrice) > bestPrice) {
             bestPrice = Main.averageItemMap.get(id).ahAvgPrice - getTax(Main.averageItemMap.get(id).ahAvgPrice);
             method = BestSellingMethod.ABIN;
         }
@@ -195,15 +199,42 @@ public class Utils {
             bestPrice = Main.lbinItem.get(id) - getTax(Main.lbinItem.get(id));
             method = BestSellingMethod.LBIN;
         }
-        if (Main.bazaarItem.containsKey(id) && Main.bazaarItem.get(id) > bestPrice) {
-            bestPrice = Main.bazaarItem.get(id);
-            method = BestSellingMethod.BAZAAR;
-        }
         if (Main.npcItem.containsKey(id) && Main.npcItem.get(id) > bestPrice) {
             bestPrice = Main.npcItem.get(id);
             method = BestSellingMethod.NPC;
         }
+        if (Main.bazaarItem.containsKey(id) && Main.bazaarItem.get(id) > bestPrice) {
+            bestPrice = Main.bazaarItem.get(id);
+            method = BestSellingMethod.BAZAAR;
+        }
         return new AbstractMap.SimpleEntry<>(method, bestPrice);
+    }
+
+    public static double getAveragePriceFromItem(String item) {
+        final double[] endPrice = {0};
+        new Thread(() -> {
+
+            List<Integer> prices = new ArrayList<>();
+
+            try {
+                JsonElement main = Objects.requireNonNull(getJson("https://api.slothpixel.me/api/skyblock/auctions/" + item + "?key=" + Config.apiKey));
+
+                JsonObject asObj = main.getAsJsonObject();
+                JsonArray array = asObj.get("auctions").getAsJsonArray();
+                for (int i = 0; i < Config.itemAmountForAverage; ++i) {
+                    prices.add(array.get(i).getAsJsonObject().get("starting_bid").getAsInt());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            for (int price : prices) {
+                endPrice[0] += price;
+                Reference.logger.debug(price);
+            }
+            endPrice[0] /= prices.size();
+        }).start();
+
+        return endPrice[0];
     }
 
     public static EnumChatFormatting getColorCodeFromRarity(String rarity) {

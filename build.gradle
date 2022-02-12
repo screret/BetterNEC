@@ -50,7 +50,7 @@ test {
     systemProperty "file.encoding", "utf-8"
 }
 
-version = "1.0.0.0"
+version = "1.0.0.1"
 group = "me.screret.betternec"
 
 sourceCompatibility = 1.8

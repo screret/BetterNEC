@@ -11,6 +11,7 @@ import me.screret.betternec.Reference;
 import me.screret.betternec.objects.AverageItem;
 import me.screret.betternec.utils.Utils;
 import net.minecraft.event.ClickEvent;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -128,8 +129,8 @@ public class Client extends WebSocketClient {
                         int ahSales = Math.floorDiv(itemDetails.getAsJsonObject("auction").getAsJsonPrimitive("sales").getAsInt(), sampledDays);
                         int ahAvgPrice = (int) Math.floor(itemDetails.getAsJsonObject("auction").getAsJsonPrimitive("average_price").getAsDouble());
                         int binSales = Math.floorDiv(itemDetails.getAsJsonObject("bin").getAsJsonPrimitive("sales").getAsInt(), sampledDays);
-                        // int binAvgPrice = (int)Math.floor(itemDetails.getAsJsonObject("bin").getAsJsonPrimitive("average_price").getAsDouble());
-                        Main.averageItemMap.put(item, new AverageItem(item, ahSales + binSales, ahAvgPrice));
+                        int binAvgPrice = (int)Math.floor(itemDetails.getAsJsonObject("bin").getAsJsonPrimitive("average_price").getAsDouble());
+                        Main.averageItemMap.put(item, new AverageItem(item, ahSales + binSales, MathHelper.floor_double(Utils.getAveragePriceFromItem(item) > binAvgPrice ? MathHelper.floor_double(Utils.getAveragePriceFromItem(item)) : binAvgPrice)));
                     }
                     return;
                 case "pong":

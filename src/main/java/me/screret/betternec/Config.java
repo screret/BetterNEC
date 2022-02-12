@@ -59,7 +59,7 @@ public class Config extends Vigilant {
     )
     public static int minDemand = 10;
     @Property(
-        type = PropertyType.NUMBER,
+        type = PropertyType.SLIDER,
         category = "Flipping",
         subcategory = "Basic",
         name = "Average Demand",
@@ -68,6 +68,16 @@ public class Config extends Vigilant {
         increment = 5
     )
     public static int avgDemand = 200;
+    @Property(
+        type = PropertyType.NUMBER,
+        category = "Flipping",
+        subcategory = "Basic",
+        name = "Average Count",
+        description = "The average sales per day that is required for average price calculations or something",
+        max = Integer.MAX_VALUE,
+        increment = 2
+    )
+    public static int itemAmountForAverage = 25;
     @Property(
         type = PropertyType.PERCENT_SLIDER,
         category = "Flipping",
