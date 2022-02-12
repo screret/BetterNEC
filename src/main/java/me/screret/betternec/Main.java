@@ -1,16 +1,11 @@
 package me.screret.betternec;
 
-import me.screret.betternec.betterauth.BetterAuth;
 import me.screret.betternec.commands.NECCommand;
 import me.screret.betternec.commands.subcommands.Help;
 import me.screret.betternec.commands.subcommands.Subcommand;
 import me.screret.betternec.commands.subcommands.Toggle;
 import me.screret.betternec.commands.subcommands.Token;
-import me.screret.betternec.events.OnChatReceived;
-import me.screret.betternec.events.OnGuiOpen;
-import me.screret.betternec.events.OnTick;
-import me.screret.betternec.events.OnTooltip;
-import me.screret.betternec.events.OnWorldJoin;
+import me.screret.betternec.events.*;
 import me.screret.betternec.objects.AverageItem;
 import me.screret.betternec.utils.ApiHandler;
 import me.screret.betternec.utils.Utils;
@@ -26,11 +21,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Mod(modid = Reference.MOD_ID, name = Reference.NAME, version = Reference.VERSION)
 public class Main {

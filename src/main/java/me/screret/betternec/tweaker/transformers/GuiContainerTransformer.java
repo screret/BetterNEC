@@ -35,7 +35,7 @@ public class GuiContainerTransformer implements ITransformer {
                     if (abstractNode instanceof MethodInsnNode && abstractNode.getOpcode() == Opcodes.INVOKESPECIAL) {
                         MethodInsnNode methodInsnNode = (MethodInsnNode) abstractNode;
                         if (methodInsnNode.owner.equals(TransformerClass.GuiContainer.getNameRaw()) && TransformerMethod.drawSlot.matches(methodInsnNode)) {
-                            methodNode.instructions.insert(abstractNode, new MethodInsnNode(Opcodes.INVOKESTATIC, "me/mindlessly/notenoughcoins/tweaker/hooks/GuiContainerHook",
+                            methodNode.instructions.insert(abstractNode, new MethodInsnNode(Opcodes.INVOKESTATIC, "me/screret/betternec/tweaker/hooks/GuiContainerHook",
                                 "drawSlot", "(" + TransformerClass.GuiContainer.getName() + TransformerClass.Slot.getName() + ")V", false));
 
                             methodNode.instructions.insert(abstractNode, new VarInsnNode(Opcodes.ALOAD, 9)); // slot
