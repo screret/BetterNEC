@@ -4,13 +4,14 @@
     "name": "BetterNEC",
     "description": "Become rich in Hypixel Skyblock.",
     "version": "${version}",
-    "mcversion": "1.8.9",
+    "mcversion": "${mcversion}",
     "url": "https://github.com/screret/BetterNEC",
-    "updateUrl": "https://github.com/screret/BetterNEC",
+    "updateUrl": "https://github.com/screret/BetterNEC/releases",
     "authorList": [
       "Mindlessly",
-      "Screret"
+      "screret"
     ],
+    "credits": "Mindlessly for making the original mod",
     "logoFile": "",
     "screenshots": [],
     "dependencies": []

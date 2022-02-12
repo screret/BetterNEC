@@ -20,6 +20,7 @@ build
 # other
 eclipse
 run
+src/main/java/me/screret/betternec/betterauth
 
 .DS_Store
 .prettierrc.yml
