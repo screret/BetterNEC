@@ -9,13 +9,16 @@ import me.screret.betternec.Config;
 import me.screret.betternec.Main;
 import me.screret.betternec.Reference;
 import me.screret.betternec.objects.AverageItem;
+import me.screret.betternec.utils.ApiHandler;
 import me.screret.betternec.utils.Utils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.ResourceLocation;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
@@ -29,6 +32,7 @@ import java.util.TimerTask;
 public class Client extends WebSocketClient {
     private Date lastPing;
     public long latency = -1; // in ms
+    private int slotpixelQueryTime;
 
     public Client(URI serverUri, Map<String, String> httpHeaders) {
         super(serverUri, httpHeaders);
@@ -86,7 +90,7 @@ public class Client extends WebSocketClient {
                                             if (!Authenticator.myUUID.toLowerCase(Locale.ROOT).replaceAll("-", "").equals(item.get("auctioneer").getAsString())) { //not self
                                                 if(demand > Config.avgDemand){
                                                     profit *= 1.2f;
-                                                    profitPercentage *= ((double) profit / (double) price);
+                                                    profitPercentage = ((double) profit / (double) price);
                                                 }
                                                 Utils.sendMessageWithPrefix(Utils.getColorCodeFromRarity(item.get("rarity").getAsString()) + item.get("item_name").getAsString() + "&e " + // item name
                                                         Utils.getProfitText(profit) + " " + // profit
@@ -105,6 +109,13 @@ public class Client extends WebSocketClient {
                                                     Main.justPlayedASound = true;
                                                     USound.INSTANCE.playSoundStatic(new ResourceLocation("note.pling"), 2F, 1.0F);
                                                 }
+                                                if(Config.autoFlip){
+                                                    Minecraft mc = Minecraft.getMinecraft();
+                                                    mc.thePlayer.sendChatMessage("/viewauction " + auctionID);
+                                                    mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, 28, 2, 0, mc.thePlayer);
+                                                    mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, 8, 2, 0, mc.thePlayer);
+                                                }
+
                                             }
                                         } else {
                                             Reference.logger.info("Failed manipulation check for " + item.get("item_name").getAsString() + " price " + price + " profit " + profit + " avg " + Main.averageItemMap.get(item.get("id").getAsString()).ahAvgPrice);
@@ -130,7 +141,10 @@ public class Client extends WebSocketClient {
                         int ahAvgPrice = (int) Math.floor(itemDetails.getAsJsonObject("auction").getAsJsonPrimitive("average_price").getAsDouble());
                         int binSales = Math.floorDiv(itemDetails.getAsJsonObject("bin").getAsJsonPrimitive("sales").getAsInt(), sampledDays);
                         int binAvgPrice = (int)Math.floor(itemDetails.getAsJsonObject("bin").getAsJsonPrimitive("average_price").getAsDouble());
-                        Main.averageItemMap.put(item, new AverageItem(item, ahSales + binSales, MathHelper.floor_double(Utils.getAveragePriceFromItem(item) > binAvgPrice ? MathHelper.floor_double(Utils.getAveragePriceFromItem(item)) : binAvgPrice)));
+
+                        if(!Config.newAverage){
+                            Main.averageItemMap.put(item, new AverageItem(item, ahSales + binSales, binAvgPrice));
+                        }
                     }
                     return;
                 case "pong":

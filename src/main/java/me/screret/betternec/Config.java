@@ -39,6 +39,14 @@ public class Config extends Vigilant {
     )
     public static boolean onlySkyblock = true;
     @Property(
+        type = PropertyType.SWITCH,
+        category = "Flipping",
+        subcategory = "Basic",
+        name = "Auto flip",
+        description = "Whether the mod should automatically try to buy the items. USE AT YOUR OWN RISK; MIGHT GET YOU BANNED"
+    )
+    public static boolean autoFlip = false;
+    @Property(
         type = PropertyType.NUMBER,
         category = "Flipping",
         subcategory = "Basic",
@@ -54,27 +62,27 @@ public class Config extends Vigilant {
         subcategory = "Basic",
         name = "Minimum Demand",
         description = "The minimum sales per day that is required for the mod to send you the flip",
-        max = Integer.MAX_VALUE,
+        max = Short.MAX_VALUE,
         increment = 5
     )
     public static int minDemand = 10;
     @Property(
-        type = PropertyType.SLIDER,
+        type = PropertyType.NUMBER,
         category = "Flipping",
         subcategory = "Basic",
         name = "Average Demand",
         description = "The average sales per day that is required for the mod to send you a higher resell price",
-        max = Integer.MAX_VALUE,
+        max = Short.MAX_VALUE,
         increment = 5
     )
     public static int avgDemand = 200;
     @Property(
-        type = PropertyType.NUMBER,
+        type = PropertyType.SLIDER,
         category = "Flipping",
         subcategory = "Basic",
         name = "Average Count",
         description = "The average sales per day that is required for average price calculations or something",
-        max = Integer.MAX_VALUE,
+        max = 64,
         increment = 2
     )
     public static int itemAmountForAverage = 25;
@@ -124,6 +132,13 @@ public class Config extends Vigilant {
         description = "Whether to show debug information, such as latency"
     )
     public static boolean debug = false;
+    @Property(
+        type = PropertyType.SWITCH,
+        category = "Confidential",
+        name = "Use New Average Calculator",
+        description = "Whether to use new average calculator, won't work right now."
+    )
+    public static boolean newAverage = false;
     @Property(
         type = PropertyType.SWITCH,
         category = "Money Saving",

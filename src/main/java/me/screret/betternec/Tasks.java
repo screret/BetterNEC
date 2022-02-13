@@ -60,6 +60,30 @@ public class Tasks {
         }
     }, "Not Enough Coins Bazaar Updating Task");
 
+    public static Thread updateAHItem = new Thread(() -> {
+        while (true) {
+            if (Config.enabled || Config.bestSellingMethod) {
+                try {
+                    ApiHandler.updateAvgAH();
+                    Thread.sleep(2500);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    try {
+                        Thread.sleep(60000); // sleep 60s if the API is down or got blacklisted
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            } else {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }, "Not Enough Coins AH Updating Task");
+
     public static Thread updateFilters = new Thread(() -> {
         while (true) {
             if (Config.hideSpam) {

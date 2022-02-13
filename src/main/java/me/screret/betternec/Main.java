@@ -71,7 +71,8 @@ public class Main {
         MinecraftForge.EVENT_BUS.register(new OnChatReceived());
         MinecraftForge.EVENT_BUS.register(new OnGuiOpen());
         Tasks.updateBalance.start();
-        Tasks.updateBazaarItem.start();
+        if(Config.newAverage)
+            Tasks.updateAHItem.start();
         Tasks.updateFilters.start();
         Utils.runInAThread(ApiHandler::updateNPC);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {

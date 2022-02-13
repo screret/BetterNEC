@@ -70,7 +70,7 @@ public class Authenticator {
             }
             return null;
         }
-        return new JsonParser().parse(payload);
+        return JsonParser.parseString(payload);
     }
 
     public String getToken() {
@@ -94,7 +94,7 @@ public class Authenticator {
     public JsonObject getJwtPayload(String jwt) {
         String midPart = jwt.split("\\.")[1].replace("+", "-").replace("/", "_");
         String base64Decode = new String(Base64.decodeBase64(midPart)); // padding
-        return (JsonObject) new JsonParser().parse(base64Decode);
+        return (JsonObject) JsonParser.parseString(base64Decode);
     }
 
     private String requestAuth(GameProfile profile) throws IOException {
@@ -114,7 +114,7 @@ public class Authenticator {
             return null;
         }
 
-        JsonObject json = (JsonObject) new JsonParser().parse(payload);
+        JsonObject json = (JsonObject) JsonParser.parseString(payload);
 
         if (!json.get("success").getAsBoolean()) {
             return null;
@@ -138,7 +138,7 @@ public class Authenticator {
             return null;
         }
 
-        JsonObject json = (JsonObject) new JsonParser().parse(payload);
+        JsonObject json = (JsonObject) JsonParser.parseString(payload);
         if (!json.get("success").getAsBoolean()) {
             return null;
         }

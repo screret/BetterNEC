@@ -38,17 +38,11 @@ public class Utils {
     public static JsonElement getJson(String jsonUrl) throws IOException {
         URL url = new URL(jsonUrl);
         HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-        conn.setRequestProperty("Connection", "close");
-        conn.setRequestProperty("User-Agent", "NotEnoughCoins/1.0");
-        return JsonParser.parseReader(new InputStreamReader(conn.getInputStream()));
-    }
-
-    public static JsonElement getJsonFromHypixelAPI(String jsonUrl) throws IOException {
-        URL url = new URL(jsonUrl);
-        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
         conn.setConnectTimeout(0);
         conn.setDoOutput(true);
         conn.setRequestMethod("GET");
+        conn.setRequestProperty("Connection", "close");
+        conn.setRequestProperty("User-Agent", "NotEnoughCoins/1.0");
         return JsonParser.parseReader(new InputStreamReader(conn.getInputStream()));
     }
 
@@ -191,12 +185,12 @@ public class Utils {
         if (id.equals("POTION")) return new AbstractMap.SimpleEntry<>(BestSellingMethod.NONE, 0L);
         BestSellingMethod method = BestSellingMethod.NONE;
         long bestPrice = 0;
-        if (Main.averageItemMap.containsKey(id) && Main.averageItemMap.get(id).demand > Config.avgDemand && Main.averageItemMap.get(id).ahAvgPrice - getTax(Main.averageItemMap.get(id).ahAvgPrice) > bestPrice) {
-            bestPrice = Main.averageItemMap.get(id).ahAvgPrice - getTax(Main.averageItemMap.get(id).ahAvgPrice);
+        if (Config.newAverage && (Main.averageItemMap.containsKey(id) && Main.averageItemMap.get(id).demand > Config.avgDemand && Main.averageItemMap.get(id).ahAvgPrice - getTax(Main.averageItemMap.get(id).ahAvgPrice) > bestPrice)) {
+            bestPrice = Main.averageItemMap.get(id).ahAvgPrice;// - getTax(Main.averageItemMap.get(id).ahAvgPrice);
             method = BestSellingMethod.ABIN;
         }
         if (Main.lbinItem.containsKey(id) && Main.lbinItem.get(id) - getTax(Main.lbinItem.get(id)) > bestPrice) {
-            bestPrice = Main.lbinItem.get(id) - getTax(Main.lbinItem.get(id));
+            bestPrice = Main.lbinItem.get(id);// - getTax(Main.lbinItem.get(id));
             method = BestSellingMethod.LBIN;
         }
         if (Main.npcItem.containsKey(id) && Main.npcItem.get(id) > bestPrice) {
@@ -210,35 +204,9 @@ public class Utils {
         return new AbstractMap.SimpleEntry<>(method, bestPrice);
     }
 
-    public static double getAveragePriceFromItem(String item) {
-        final double[] endPrice = {0};
-        new Thread(() -> {
-
-            List<Integer> prices = new ArrayList<>();
-
-            try {
-                JsonElement main = Objects.requireNonNull(getJson("https://api.slothpixel.me/api/skyblock/auctions/" + item + "?key=" + Config.apiKey));
-
-                JsonObject asObj = main.getAsJsonObject();
-                JsonArray array = asObj.get("auctions").getAsJsonArray();
-                for (int i = 0; i < Config.itemAmountForAverage; ++i) {
-                    prices.add(array.get(i).getAsJsonObject().get("starting_bid").getAsInt());
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            for (int price : prices) {
-                endPrice[0] += price;
-                Reference.logger.debug(price);
-            }
-            endPrice[0] /= prices.size();
-        }).start();
-
-        return endPrice[0];
-    }
-
     public static EnumChatFormatting getColorCodeFromRarity(String rarity) {
         switch (rarity) {
+            default:
             case "COMMON":
                 return EnumChatFormatting.WHITE;
             case "UNCOMMON":
@@ -256,8 +224,6 @@ public class Utils {
             case "SPECIAL":
             case "VERY_SPECIAL":
                 return EnumChatFormatting.RED;
-            default:
-                return EnumChatFormatting.WHITE;
         }
     }
 }

@@ -6,6 +6,8 @@ import com.google.gson.JsonObject;
 import me.screret.betternec.Authenticator;
 import me.screret.betternec.Config;
 import me.screret.betternec.Main;
+import me.screret.betternec.Reference;
+import me.screret.betternec.objects.AverageItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScorePlayerTeam;
@@ -13,10 +15,7 @@ import net.minecraft.scoreboard.Scoreboard;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static me.screret.betternec.utils.Utils.getJson;
 
@@ -80,5 +79,38 @@ public class ApiHandler {
             }
         }
         return null;
+    }
+
+    public static void updateAvgAH() throws IOException {
+        JsonArray items = Objects.requireNonNull(getJson("https://api.hypixel.net/resources/skyblock/items"))
+            .getAsJsonObject().getAsJsonArray("items");
+        List<String> itemDatas = new ArrayList<>();
+        for (JsonElement i : items) {
+            JsonObject item = i.getAsJsonObject();
+            itemDatas.add(item.get("id").getAsString());
+        }
+        List<Integer> prices = new ArrayList<>();
+        int sales;
+        int itemAveragePrice = 0;
+
+        for(String item : itemDatas){
+            JsonElement main = Objects.requireNonNull(getJson("https://api.slothpixel.me/api/skyblock/auctions?id=" + item + "&key=" + Config.apiKey + "&limit=" + Config.itemAmountForAverage));
+            JsonObject asObj = main.getAsJsonObject();
+            JsonArray array = asObj.get("auctions").getAsJsonArray();
+            if(array != null){
+                for (JsonElement element : array) {
+                    prices.add(element.getAsJsonObject().get("starting_bid").getAsInt());
+                }
+            }else{
+                throw new IOException("Coudn't find auction list, reverting back to old, bad average calculation.");
+            }
+            for (int price : prices) {
+                itemAveragePrice += price;
+                Reference.logger.error(price);
+            }
+            itemAveragePrice /= prices.size();
+            sales = asObj.get("sold").getAsInt();
+            Main.averageItemMap.put(item, new AverageItem(item, sales, itemAveragePrice));
+        }
     }
 }
