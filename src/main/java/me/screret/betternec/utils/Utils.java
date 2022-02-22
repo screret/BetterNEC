@@ -16,15 +16,18 @@ import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.EnumChatFormatting;
+import org.apache.commons.io.IOUtils;
 
 import javax.net.ssl.HttpsURLConnection;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 public class Utils {
     //Stolen from Biscut & Moulberry and used for detecting whether in skyblock
@@ -185,7 +188,7 @@ public class Utils {
         if (id.equals("POTION")) return new AbstractMap.SimpleEntry<>(BestSellingMethod.NONE, 0L);
         BestSellingMethod method = BestSellingMethod.NONE;
         long bestPrice = 0;
-        if (Config.newAverage && (Main.averageItemMap.containsKey(id) && Main.averageItemMap.get(id).demand > Config.avgDemand && Main.averageItemMap.get(id).ahAvgPrice - getTax(Main.averageItemMap.get(id).ahAvgPrice) > bestPrice)) {
+        if (Main.averageItemMap.containsKey(id) && Main.averageItemMap.get(id).demand > Config.avgDemand && Main.averageItemMap.get(id).ahAvgPrice - getTax(Main.averageItemMap.get(id).ahAvgPrice) > bestPrice) {
             bestPrice = Main.averageItemMap.get(id).ahAvgPrice;// - getTax(Main.averageItemMap.get(id).ahAvgPrice);
             method = BestSellingMethod.ABIN;
         }
@@ -225,5 +228,38 @@ public class Utils {
             case "VERY_SPECIAL":
                 return EnumChatFormatting.RED;
         }
+    }
+
+    private static List<String> reforgeList = null;
+    private static String reforgeListName = "reforge_list.txt";
+    private static String reforgeRegex = "";
+
+    public static List<String> getReforgesFromFile(){
+        if(Utils.reforgeList != null && Utils.reforgeList.size() > 0){
+            return Utils.reforgeList;
+        }
+        Utils.reforgeList = new ArrayList<>();
+        InputStream inputStream = Utils.class.getResourceAsStream("/" + Utils.reforgeListName);
+        reforgeList = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
+
+        return reforgeList;
+    }
+
+    public static String getReforgeRegex(){
+        getReforgesFromFile();
+        if(Utils.reforgeRegex != null && !Utils.reforgeRegex.isEmpty()){
+            return Utils.reforgeRegex;
+        }
+        StringBuilder builder = new StringBuilder();
+        for(int i = 0; i < reforgeList.size(); ++i){
+            if(i != reforgeList.size() - 1){
+                builder.append(reforgeList.get(i));
+                builder.append("|");
+            }else{
+                builder.append(reforgeList.get(i));
+            }
+        }
+        reforgeRegex = builder.toString();
+        return reforgeRegex;
     }
 }

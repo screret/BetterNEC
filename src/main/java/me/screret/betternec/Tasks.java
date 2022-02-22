@@ -64,7 +64,11 @@ public class Tasks {
         while (true) {
             if (Config.enabled || Config.bestSellingMethod) {
                 try {
-                    ApiHandler.updateAvgAH();
+                    if(Config.newAverage){
+                        ApiHandler.updateAvgAH();
+                    }else{
+                        ApiHandler.updateAvgAHOldSystem();
+                    }
                     Thread.sleep(2500);
                 } catch (Exception e) {
                     e.printStackTrace();

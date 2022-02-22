@@ -94,7 +94,6 @@ public class Client extends WebSocketClient {
                                                 }
                                                 Utils.sendMessageWithPrefix(Utils.getColorCodeFromRarity(item.get("rarity").getAsString()) + item.get("item_name").getAsString() + "&e " + // item name
                                                         Utils.getProfitText(profit) + " " + // profit
-                                                        "&eP: &a" + Utils.formatValue(price) + " " + // price
                                                         "&ePP: &a" + (int) Math.floor(profitPercentage * 100) + "% " + // profit %
                                                         "&eSPD: &a" + demand + " " + // demand
                                                         (Config.debug ? "\n&eCL: &a" + item.get("cache_latency").getAsInt() + "ms" : "") + " " + // debug: cache latency
@@ -112,8 +111,18 @@ public class Client extends WebSocketClient {
                                                 if(Config.autoFlip){
                                                     Minecraft mc = Minecraft.getMinecraft();
                                                     mc.thePlayer.sendChatMessage("/viewauction " + auctionID);
-                                                    mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, 28, 2, 0, mc.thePlayer);
-                                                    mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, 8, 2, 0, mc.thePlayer);
+                                                    new Thread(() -> {
+                                                        try {
+                                                            wait(500);
+                                                            mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, 28, 2, 0, mc.thePlayer);
+                                                            wait(500);
+                                                            mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, 8, 2, 0, mc.thePlayer);
+                                                        } catch (InterruptedException e) {
+                                                            e.printStackTrace();
+                                                        }
+
+                                                    }, "Click Thread");
+
                                                 }
 
                                             }
@@ -141,10 +150,6 @@ public class Client extends WebSocketClient {
                         int ahAvgPrice = (int) Math.floor(itemDetails.getAsJsonObject("auction").getAsJsonPrimitive("average_price").getAsDouble());
                         int binSales = Math.floorDiv(itemDetails.getAsJsonObject("bin").getAsJsonPrimitive("sales").getAsInt(), sampledDays);
                         int binAvgPrice = (int)Math.floor(itemDetails.getAsJsonObject("bin").getAsJsonPrimitive("average_price").getAsDouble());
-
-                        if(!Config.newAverage){
-                            Main.averageItemMap.put(item, new AverageItem(item, ahSales + binSales, binAvgPrice));
-                        }
                     }
                     return;
                 case "pong":

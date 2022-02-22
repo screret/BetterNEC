@@ -1,10 +1,7 @@
 package me.screret.betternec;
 
 import me.screret.betternec.commands.NECCommand;
-import me.screret.betternec.commands.subcommands.Help;
-import me.screret.betternec.commands.subcommands.Subcommand;
-import me.screret.betternec.commands.subcommands.Toggle;
-import me.screret.betternec.commands.subcommands.Token;
+import me.screret.betternec.commands.subcommands.*;
 import me.screret.betternec.events.*;
 import me.screret.betternec.objects.AverageItem;
 import me.screret.betternec.utils.ApiHandler;
@@ -31,7 +28,8 @@ public class Main {
     public static NECCommand commandManager = new NECCommand(new Subcommand[]{
         new Toggle(),
         new Help(),
-        new Token()
+        new Token(),
+        new ForceUpdatePrices()
     });
     public static Map<String, AverageItem> averageItemMap = new HashMap<>();
     public static Map<String, Date> processedItem = new HashMap<>(); // Date is the expiry time, indicates when the auction ends and should be purged to save memory for the long run
@@ -71,8 +69,7 @@ public class Main {
         MinecraftForge.EVENT_BUS.register(new OnChatReceived());
         MinecraftForge.EVENT_BUS.register(new OnGuiOpen());
         Tasks.updateBalance.start();
-        if(Config.newAverage)
-            Tasks.updateAHItem.start();
+        Tasks.updateAHItem.start();
         Tasks.updateFilters.start();
         Utils.runInAThread(ApiHandler::updateNPC);
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -82,7 +79,7 @@ public class Main {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }));
+        }, "Authentication Logout Thread"));
         progressBar.step("Establishing WebSocket Connection");
         Client.connectWithToken();
         ProgressManager.pop(progressBar);

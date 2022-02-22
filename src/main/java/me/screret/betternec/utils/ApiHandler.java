@@ -1,5 +1,8 @@
 package me.screret.betternec.utils;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -12,6 +15,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.scoreboard.Score;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.scoreboard.Scoreboard;
+import org.apache.commons.lang3.StringUtils;
+import scala.collection.mutable.MultiMap;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -102,7 +107,7 @@ public class ApiHandler {
                     prices.add(element.getAsJsonObject().get("starting_bid").getAsInt());
                 }
             }else{
-                throw new IOException("Coudn't find auction list, reverting back to old, bad average calculation.");
+                throw new IOException("Coudn't find auction list.");
             }
             for (int price : prices) {
                 itemAveragePrice += price;
@@ -111,6 +116,60 @@ public class ApiHandler {
             itemAveragePrice /= prices.size();
             sales = asObj.get("sold").getAsInt();
             Main.averageItemMap.put(item, new AverageItem(item, sales, itemAveragePrice));
+        }
+    }
+
+    public static void updateAvgAHOldSystem() throws IOException {
+        JsonArray items = Objects.requireNonNull(getJson("https://api.hypixel.net/resources/skyblock/items"))
+            .getAsJsonObject().getAsJsonArray("items");
+        List<String> itemDatas = new ArrayList<>();
+        for (JsonElement i : items) {
+            JsonObject item = i.getAsJsonObject();
+            itemDatas.add(item.get("id").getAsString());
+        }
+        Map<String, Integer> soldMap = new HashMap<>();
+
+        JsonElement pageElement = Objects.requireNonNull(getJson("https://api.hypixel.net/skyblock/auctions?key=" + Config.apiKey));
+        int pageAmount = pageElement.getAsJsonObject().getAsJsonPrimitive("totalPages").getAsInt();
+
+        for(int page = 0; page <= (Config.itemAmountForAverage < pageAmount ? Config.itemAmountForAverage : pageAmount); ++page){
+            Multimap<String, Integer> itemMap = ArrayListMultimap.create();
+            JsonElement main = Objects.requireNonNull(getJson("https://api.hypixel.net/skyblock/auctions?page=" + page + "&key=" + Config.apiKey));
+            JsonObject asObj = main.getAsJsonObject();
+            JsonArray array = asObj.get("auctions").getAsJsonArray();
+            if(array != null) {
+                for (JsonElement element : array) {
+                    JsonObject object = element.getAsJsonObject();
+                    String id = object.get("item_name").getAsString();
+                    id = id.replaceAll(Utils.getReforgeRegex(), "")
+                        .replaceAll("^\\[Lvl\\s(?:[1-9]\\d?|[12]\\d{2})\\]\\s", "")
+                        .replace("◆", "")
+                        .replaceAll(" I{1,3}$", "")
+                        .toLowerCase(Locale.ROOT)
+                        .replaceAll("\\s+", "_");
+
+                    itemMap.put(id, object.get("starting_bid").getAsInt());
+                    if(soldMap.containsKey(id)){
+                        soldMap.put(id, soldMap.get(id) + 1);
+                    }else{
+                        soldMap.put(id, 1);
+                    }
+                }
+            }else{
+                throw new IOException("Coudn't find auction page.");
+            }
+
+            for (Map.Entry<String, Collection<Integer>> entry : itemMap.asMap().entrySet()) {
+                int itemAveragePrice = 0;
+                int itemCount = 0;
+                for(int price : entry.getValue()){
+                    itemAveragePrice += price;
+                    itemCount++;
+                }
+                itemAveragePrice /= itemCount;
+                String key = entry.getKey();
+                Main.averageItemMap.put(key, new AverageItem(key, soldMap.get(key), itemAveragePrice));
+            }
         }
     }
 }

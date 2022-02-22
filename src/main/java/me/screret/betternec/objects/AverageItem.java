@@ -10,4 +10,8 @@ public class AverageItem {
         this.demand = demand;
         this.ahAvgPrice = ahAvgPrice;
     }
+
+    public String toString(){
+        return id + ";" + demand + ";" + ahAvgPrice;
+    }
 }
