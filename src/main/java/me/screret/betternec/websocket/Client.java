@@ -114,9 +114,11 @@ public class Client extends WebSocketClient {
                                                     new Thread(() -> {
                                                         try {
                                                             wait(500);
-                                                            mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, 28, 2, 0, mc.thePlayer);
-                                                            wait(500);
+                                                            mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, 17, 2, 0, mc.thePlayer);
+                                                            Reference.logger.info("clicked");
+                                                            wait(1000);
                                                             mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, 8, 2, 0, mc.thePlayer);
+                                                            Reference.logger.info("clicked");
                                                         } catch (InterruptedException e) {
                                                             e.printStackTrace();
                                                         }
