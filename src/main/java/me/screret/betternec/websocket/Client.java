@@ -152,6 +152,9 @@ public class Client extends WebSocketClient {
                         int ahAvgPrice = (int) Math.floor(itemDetails.getAsJsonObject("auction").getAsJsonPrimitive("average_price").getAsDouble());
                         int binSales = Math.floorDiv(itemDetails.getAsJsonObject("bin").getAsJsonPrimitive("sales").getAsInt(), sampledDays);
                         int binAvgPrice = (int)Math.floor(itemDetails.getAsJsonObject("bin").getAsJsonPrimitive("average_price").getAsDouble());
+                        if(!Config.useAverages){
+                            Main.averageItemMap.put(item, new AverageItem(item, ahSales + binSales, binAvgPrice));
+                        }
                     }
                     return;
                 case "pong":

@@ -2,17 +2,21 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 buildscript {
     repositories {
-        maven { url 'https://jitpack.io' }
+        jcenter()
+        maven {
+            name 'JitPack'
+            url 'https://jitpack.io'
+        }
         maven { url 'https://maven.minecraftforge.net/' }
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath 'com.github.Skytils:ForgeGradle:6f5327'
+        classpath "com.github.Skytils:ForgeGradle:ddb1eb0"
         classpath "com.github.johnrengelman:shadow:6.1.0"
     }
 }
 
-apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: "com.github.johnrengelman.shadow"
 apply plugin: 'java'
 
@@ -32,6 +36,7 @@ dependencies {
     }
     implementation("org.java-websocket:Java-WebSocket:1.5.2")
     implementation("com.google.code.gson:gson:2.8.9")
+    implementation('javax.inject:javax.inject:1')
 }
 shadowJar {
     dependencies {
@@ -50,7 +55,7 @@ test {
     systemProperty "file.encoding", "utf-8"
 }
 
-version = "1.0.1.3"
+version = "1.0.1.4"
 group = "me.screret.betternec"
 
 sourceCompatibility = 1.8
@@ -70,8 +75,9 @@ jar {
             'ForceLoadAsMod': true,
             'FMLCorePluginContainsFMLMod': true,
             'ModSide': 'CLIENT',
-            'TweakClass': 'gg.essential.loader.stage0.EssentialSetupTweaker'
+            'TweakClass': 'gg.essential.loader.stage0.EssentialSetupTweaker',
     )
+
 }
 sourceJar {
     enabled = false
@@ -94,7 +100,7 @@ compileJava {
 processResources {
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
-
+    
     from(sourceSets.main.resources.srcDirs) {
         include 'mcmod.info'
         expand 'version':project.version, 'mcversion':project.minecraft.version

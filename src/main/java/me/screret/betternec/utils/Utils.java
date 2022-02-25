@@ -188,7 +188,7 @@ public class Utils {
         if (id.equals("POTION")) return new AbstractMap.SimpleEntry<>(BestSellingMethod.NONE, 0L);
         BestSellingMethod method = BestSellingMethod.NONE;
         long bestPrice = 0;
-        if (Main.averageItemMap.containsKey(id) && Main.averageItemMap.get(id).demand > Config.avgDemand && Main.averageItemMap.get(id).ahAvgPrice - getTax(Main.averageItemMap.get(id).ahAvgPrice) > bestPrice) {
+        if (Config.useAverages && (Main.averageItemMap.containsKey(id) && Main.averageItemMap.get(id).demand > Config.avgDemand && Main.averageItemMap.get(id).ahAvgPrice - getTax(Main.averageItemMap.get(id).ahAvgPrice) > bestPrice)) {
             bestPrice = Main.averageItemMap.get(id).ahAvgPrice;// - getTax(Main.averageItemMap.get(id).ahAvgPrice);
             method = BestSellingMethod.ABIN;
         }

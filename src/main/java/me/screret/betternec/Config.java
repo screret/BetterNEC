@@ -119,6 +119,14 @@ public class Config extends Vigilant {
     )
     public static boolean manipulationCheck = true;
     @Property(
+        type = PropertyType.SWITCH,
+        category = "Flipping",
+        subcategory = "Advanced",
+        name = "Use Average calculations",
+        description = "Whether to use an average calculator, won't work right now."
+    )
+    public static boolean useAverages = false;
+    @Property(
         type = PropertyType.TEXT,
         category = "Confidential",
         name = "API Key", protectedText = true,
